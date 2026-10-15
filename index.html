@@ -3,14 +3,71 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="refresh" content="0;url=夸人（定位主文件）.html">
-<title>GPS 定位 HTML 前端</title>
-<style>body{font-family:"Microsoft YaHei",sans-serif;background:#f4f7fb;color:#1a2b4a;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}a{color:#2b6ef0;text-decoration:none}.box{text-align:center;padding:24px}</style>
+<title>GPS 定位 HTML 前端 · tsy-yyds</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231d1d1f'/%3E%3Cpath d='M16 4c-4.4 0-8 3.6-8 8 0 6 8 16 8 16s8-10 8-16c0-4.4-3.6-8-8-8z' stroke='%23fff' stroke-width='1.8' fill='none'/%3E%3Ccircle cx='16' cy='12' r='2.6' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif;color:#1d1d1f;background:#fff;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:760px;margin:0 auto;padding:0 28px}
+
+header{text-align:center;padding:96px 0 40px}
+h1{font-size:44px;font-weight:700;letter-spacing:-.02em}
+.tagline{margin-top:14px;font-size:17px;color:#86868b}
+
+section{padding:44px 0 8px;border-top:1px solid #d2d2d7}
+section h2{font-size:15px;font-weight:600;color:#86868b;margin-bottom:18px}
+
+.tool{border-bottom:1px solid #e8e8ed}
+a.trow{display:flex;align-items:center;gap:16px;padding:20px 2px;text-decoration:none;color:#1d1d1f;transition:background .15s}
+a.trow:hover{background:#f5f5f7}
+.trow .t{flex:1;font-size:16px;font-weight:600}
+.trow .d{color:#86868b;font-size:13.5px;margin-top:2px}
+.trow .arr{flex:none;color:#0071e3;font-size:20px;transition:transform .15s}
+a.trow:hover .arr{transform:translateX(3px)}
+
+.note{margin-top:18px;font-size:13px;color:#86868b}
+
+footer{padding:44px 0 60px;border-top:1px solid #d2d2d7;margin-top:48px;color:#86868b;font-size:13px;display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between}
+footer a{color:#1d1d1f;text-decoration:none}
+footer a:hover{text-decoration:underline}
+
+@media (max-width:560px){
+  header{padding:64px 0 32px}
+  h1{font-size:34px}
+  .tagline{font-size:15px}
+}
+</style>
 </head>
 <body>
-<div class="box">
-  <p><a href="夸人（定位主文件）.html">进入 小纸条（定位主文件）</a> · <a href="密文解密.html">密文解密</a></p>
-  <p style="font-size:13px;color:#7a8bb0">自动跳转中，若未跳转请点击上方链接</p>
-</div>
+
+<header class="wrap">
+  <h1>GPS 定位 HTML 前端</h1>
+  <p class="tagline">一组纯网页小工具 · 浏览器打开即用，无需安装</p>
+</header>
+
+<main class="wrap">
+  <section>
+    <h2>工具</h2>
+    <div class="tool">
+      <a class="trow" href="夸人（定位主文件）.html">
+        <div><div class="t">小纸条（定位主文件）</div><div class="d">基于浏览器定位的互动页，打开即可使用</div></div>
+        <span class="arr" aria-hidden="true">→</span>
+      </a>
+    </div>
+    <div class="tool">
+      <a class="trow" href="密文解密.html">
+        <div><div class="t">密文解密</div><div class="d">单页解密小工具</div></div>
+        <span class="arr" aria-hidden="true">→</span>
+      </a>
+    </div>
+    <p class="note">源码开源：<a href="https://github.com/tsy-yyds/gps-html" target="_blank" rel="noopener" style="color:#0071e3">github.com/tsy-yyds/gps-html</a></p>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div>© 2026 tsy-yyds · GPS 定位 HTML 前端</div>
+  <div><a href="https://github.com/tsy-yyds" target="_blank" rel="noopener">GitHub 主页</a> · <a href="https://tsy-yyds.github.io/tecy-project-summary/" target="_blank" rel="noopener">TECY 项目总汇</a></div>
+</footer>
+
 </body>
 </html>
