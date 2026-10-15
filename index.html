@@ -2,71 +2,279 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GPS 定位 HTML 前端 · tsy-yyds</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231d1d1f'/%3E%3Cpath d='M16 4c-4.4 0-8 3.6-8 8 0 6 8 16 8 16s8-10 8-16c0-4.4-3.6-8-8-8z' stroke='%23fff' stroke-width='1.8' fill='none'/%3E%3Ccircle cx='16' cy='12' r='2.6' fill='%23fff'/%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPS 定位 HTML 前端 · 纯网页小工具</title>
+<meta name="description" content="免费开源的纯网页小工具集：基于浏览器定位的小纸条互动页、密文解密工具。打开即用，无需安装，源码开源。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231B5FBF'/%3E%3Cpath d='M32 8c-9.4 0-17 7.6-17 17 0 12.7 17 31 17 31s17-18.3 17-31c0-9.4-7.6-17-17-17z' fill='none' stroke='%23fff' stroke-width='4'/%3E%3Ccircle cx='32' cy='25' r='6' fill='%23fff'/%3E%3Cpath d='M28 46a6 6 0 0 1 8 0' stroke='%23fff' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif;color:#1d1d1f;background:#fff;line-height:1.6;-webkit-font-smoothing:antialiased}
-.wrap{max-width:760px;margin:0 auto;padding:0 28px}
+  :root{
+    --paper:#FAFAF6; --card:#FFFFFF; --ink:#1F2328; --ink-soft:#57606A;
+    --line:#E6E8EB; --blue:#1B5FBF; --blue-deep:#154A97; --blue-soft:#EAF1FB;
+    --ok:#0E7A4D; --warn-bg:#FFF7E6; --warn-line:#F5C76A;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.75;font-size:16px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto;padding:0 22px}
+  a{color:var(--blue);text-decoration:none}
+  a:hover{text-decoration:underline}
 
-header{text-align:center;padding:96px 0 40px}
-h1{font-size:44px;font-weight:700;letter-spacing:-.02em}
-.tagline{margin-top:14px;font-size:17px;color:#86868b}
+  nav{position:sticky;top:0;z-index:50;background:rgba(250,250,246,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:56px}
+  .brand{display:inline-flex;align-items:center;gap:9px;font-weight:800;font-size:17px;color:var(--ink);min-height:44px}
+  .brand svg{width:26px;height:26px}
+  .nav-links{display:flex;gap:26px;font-size:14px}
+  .nav-links a{color:var(--ink-soft);font-weight:500;padding:8px 0;display:inline-block}
+  .nav-links a:hover{color:var(--blue);text-decoration:none}
 
-section{padding:44px 0 8px;border-top:1px solid #d2d2d7}
-section h2{font-size:15px;font-weight:600;color:#86868b;margin-bottom:18px}
+  header.hero{padding:76px 0 56px;border-bottom:1px solid var(--line);overflow:hidden}
+  .hero-inner{display:grid;grid-template-columns:1.15fr .85fr;gap:44px;align-items:center}
+  .kicker{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--blue);font-weight:600;background:var(--blue-soft);border-radius:999px;padding:4px 14px;margin-bottom:22px}
+  h1{font-size:42px;line-height:1.22;font-weight:800;letter-spacing:-.5px}
+  h1 .accent{color:var(--blue)}
+  .sub{font-size:17px;color:var(--ink-soft);max-width:36em;margin-top:16px}
+  .meta-line{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:26px;font-size:14px;color:var(--ink-soft)}
+  .meta-line span{display:inline-flex;align-items:center;gap:6px}
+  .meta-line svg{width:14px;height:14px;color:var(--ok)}
+  .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:13px 24px;border-radius:10px;font-size:15px;font-weight:600;transition:transform .15s ease,box-shadow .15s ease}
+  .btn svg{width:17px;height:17px}
+  .btn-primary{background:var(--blue);color:#fff;box-shadow:0 2px 10px rgba(27,95,191,.28)}
+  .btn-primary:hover{background:var(--blue-deep);transform:translateY(-1px);text-decoration:none}
+  .btn-ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+  .btn-ghost:hover{border-color:var(--blue);color:var(--blue);text-decoration:none}
+  .hero-art{display:flex;align-items:center;justify-content:center}
+  .hero-art svg{width:100%;max-width:360px;height:auto}
 
-.tool{border-bottom:1px solid #e8e8ed}
-a.trow{display:flex;align-items:center;gap:16px;padding:20px 2px;text-decoration:none;color:#1d1d1f;transition:background .15s}
-a.trow:hover{background:#f5f5f7}
-.trow .t{flex:1;font-size:16px;font-weight:600}
-.trow .d{color:#86868b;font-size:13.5px;margin-top:2px}
-.trow .arr{flex:none;color:#0071e3;font-size:20px;transition:transform .15s}
-a.trow:hover .arr{transform:translateX(3px)}
+  section{padding:60px 0;border-bottom:1px solid var(--line)}
+  .sec-head{margin-bottom:36px}
+  .sec-head h2{font-size:27px;font-weight:800;letter-spacing:-.3px}
+  .sec-head p{color:var(--ink-soft);margin-top:8px;font-size:15px}
+  .lead{font-size:16px;color:var(--ink-soft);max-width:60em}
+  .lead b{color:var(--ink)}
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;margin-top:26px;font-size:15px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 22px}
+  .flow .node{display:inline-flex;align-items:center;gap:8px;font-weight:600}
+  .flow .node svg{width:18px;height:18px;color:var(--blue)}
+  .flow .arrow{color:var(--ink-soft);font-weight:700}
 
-.note{margin-top:18px;font-size:13px;color:#86868b}
+  .file-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px 30px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px 28px;margin-top:26px}
+  .file-row{display:flex;gap:14px;font-size:15px;border-bottom:1px dashed var(--line);padding:8px 0}
+  .file-row:last-child{border-bottom:none}
+  .file-row dt{color:var(--ink-soft);flex:0 0 92px;font-weight:500}
+  .file-row dd{font-weight:600}
 
-footer{padding:44px 0 60px;border-top:1px solid #d2d2d7;margin-top:48px;color:#86868b;font-size:13px;display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between}
-footer a{color:#1d1d1f;text-decoration:none}
-footer a:hover{text-decoration:underline}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:24px;display:flex;gap:16px;align-items:flex-start}
+  .card-icon{flex:0 0 44px;width:44px;height:44px;border-radius:10px;background:var(--blue-soft);color:var(--blue);display:flex;align-items:center;justify-content:center}
+  .card-icon svg{width:23px;height:23px}
+  .card h3{font-size:16px;font-weight:700;margin-bottom:4px}
+  .card p{font-size:14px;color:var(--ink-soft)}
 
-@media (max-width:560px){
-  header{padding:64px 0 32px}
-  h1{font-size:34px}
-  .tagline{font-size:15px}
-}
+  /* 在线工具 */
+  .tool-card{display:flex;gap:20px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:26px 30px;margin-bottom:16px}
+  .tool-card .tc-icon{flex:0 0 56px;width:56px;height:56px;border-radius:12px;background:var(--blue-soft);color:var(--blue);display:flex;align-items:center;justify-content:center}
+  .tool-card .tc-icon svg{width:28px;height:28px}
+  .tool-card .tc-body{flex:1;min-width:0}
+  .tool-card .tc-body h3{font-size:18px;font-weight:800}
+  .tool-card .tc-body p{font-size:14px;color:var(--ink-soft);margin-top:4px}
+  .tool-card .tc-btn{flex:none}
+  .btn-open{display:inline-flex;align-items:center;gap:8px;background:var(--blue);color:#fff;padding:12px 26px;border-radius:10px;font-size:15px;font-weight:700;box-shadow:0 2px 10px rgba(27,95,191,.28)}
+  .btn-open:hover{background:var(--blue-deep);transform:translateY(-1px);text-decoration:none}
+  .btn-open svg{width:16px;height:16px}
+
+  .faq{display:grid;gap:14px}
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 20px}
+  details summary{cursor:pointer;font-weight:600;font-size:15px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  details summary::-webkit-details-marker{display:none}
+  details summary::after{content:"";flex:0 0 10px;width:10px;height:10px;border-right:2px solid var(--ink-soft);border-bottom:2px solid var(--ink-soft);transform:rotate(45deg);transition:transform .2s ease;margin-top:-4px}
+  details[open] summary::after{transform:rotate(-135deg);margin-top:4px}
+  details p{margin-top:12px;font-size:14px;color:var(--ink-soft)}
+  details code{font-family:Consolas,"Courier New",monospace;font-size:13px;background:var(--blue-soft);color:var(--blue-deep);border-radius:5px;padding:1px 7px}
+
+  footer{padding:40px 0 64px;color:var(--ink-soft);font-size:14px}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between;align-items:center}
+  footer a{color:var(--blue)}
+
+  @media (max-width:760px){
+    h1{font-size:31px}
+    .sub{font-size:16px}
+    .hero-inner{grid-template-columns:1fr;gap:30px}
+    .hero-art{order:-1}
+    .hero-art svg{max-width:280px;width:100%}
+    header.hero{padding:52px 0 40px}
+    section{padding:44px 0}
+    .grid{grid-template-columns:1fr}
+    .file-grid{grid-template-columns:1fr}
+    .nav-links{display:none}
+    .cta-row .btn{flex:1 1 100%;justify-content:center}
+    .tool-card{flex-direction:column;align-items:stretch;padding:22px 20px}
+    .tool-card .tc-btn{width:100%}
+    .tool-card .btn-open{justify-content:center;width:100%}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn{transition:none}}
 </style>
 </head>
 <body>
 
-<header class="wrap">
-  <h1>GPS 定位 HTML 前端</h1>
-  <p class="tagline">一组纯网页小工具 · 浏览器打开即用，无需安装</p>
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <svg viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#1B5FBF"/><path d="M32 8c-9.4 0-17 7.6-17 17 0 12.7 17 31 17 31s17-18.3 17-31c0-9.4-7.6-17-17-17z" fill="none" stroke="#fff" stroke-width="4"/><circle cx="32" cy="25" r="6" fill="#fff"/><path d="M28 46a6 6 0 0 1 8 0" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
+      GPS 定位 HTML
+    </a>
+    <div class="nav-links">
+      <a href="#intro">介绍</a>
+      <a href="#tools">在线工具</a>
+      <a href="https://github.com/tsy-yyds/gps-html">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap hero-inner">
+    <div>
+      <span class="kicker">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        纯网页 · 打开即用
+      </span>
+      <h1>浏览器里的<br><span class="accent">定位小工具</span></h1>
+      <p class="sub">不需要安装任何软件，打开网页、允许浏览器定位，就能用的小工具集合。目前包含「小纸条」定位互动页与「密文解密」两个工具。</p>
+      <div class="meta-line">
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>无需安装</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>浏览器定位</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>完全开源</span>
+      </div>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#tools">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9z"/></svg>
+          立即使用
+        </a>
+        <a class="btn btn-ghost" href="https://github.com/tsy-yyds/gps-html" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-5-2.5S3.5 12 6 12c1.5 0 2.5 1 2.5 1S9 9.5 12 8.5c0-1 .5-2.5 1-4C14.5 6 14 8 14.5 9c1-.5 2-1.5 3.5-2-1 1.5-.5 3 0 4 1.5-.5 2.5-.5 3.5-.5 0 1.5-1 2.5-2 3.5 0 5-5.5 5.5-7 4.5z"/></svg>
+          查看源码
+        </a>
+      </div>
+    </div>
+    <div class="hero-art">
+      <svg viewBox="0 0 360 260" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <ellipse cx="180" cy="236" rx="150" ry="14" fill="#EDEFF2"/>
+        <g stroke="#C9D8F0" stroke-width="2">
+          <path d="M70 120h60M100 90v60"/>
+          <path d="M170 90h80M210 60v60"/>
+          <path d="M60 190h80M100 160v60"/>
+          <path d="M210 160h90M255 130v60"/>
+        </g>
+        <path d="M150 130a60 60 0 0 0 60 60 60 60 0 0 0-60-60z" fill="#1B5FBF" opacity=".18"/>
+        <circle cx="180" cy="160" r="10" fill="#1B5FBF"/>
+        <path d="M180 168v42" stroke="#1B5FBF" stroke-width="3" stroke-linecap="round"/>
+        <path d="M158 176c-10 14-14 24-14 34 0 8 6 14 14 14s14-6 14-14c0-10-4-20-14-34z" fill="none" stroke="#1B5FBF" stroke-width="2.5"/>
+        <path d="M156 216l24 24 24-24" fill="#fff" stroke="#1B5FBF" stroke-width="2.5" stroke-linejoin="round"/>
+        <g stroke="#9AA4AF" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 6">
+          <path d="M92 150c-8-4-12-12-8-18s14-8 20-4"/>
+          <path d="M268 150c8-4 12-12 8-18s-14-8-20-4"/>
+        </g>
+      </svg>
+    </div>
+  </div>
 </header>
 
-<main class="wrap">
-  <section>
-    <h2>工具</h2>
-    <div class="tool">
-      <a class="trow" href="夸人（定位主文件）.html">
-        <div><div class="t">小纸条（定位主文件）</div><div class="d">基于浏览器定位的互动页，打开即可使用</div></div>
-        <span class="arr" aria-hidden="true">→</span>
-      </a>
+<!-- ===== 介绍 ===== -->
+<section id="intro">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>它是什么</h2>
     </div>
-    <div class="tool">
-      <a class="trow" href="密文解密.html">
-        <div><div class="t">密文解密</div><div class="d">单页解密小工具</div></div>
-        <span class="arr" aria-hidden="true">→</span>
-      </a>
+    <p class="lead">一组<b>纯 HTML 网页工具</b>，托管在 GitHub Pages 上，浏览器打开就能用。最核心的「小纸条」基于浏览器 Geolocation 定位接口，允许定位后即可生成带位置的互动纸条。</p>
+    <div class="flow">
+      <span class="node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18"/><path d="M12 3v18"/><rect x="5" y="5" width="14" height="14" rx="3"/></svg>打开网页</span>
+      <span class="arrow">→</span>
+      <span class="node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"/></svg>允许浏览器定位</span>
+      <span class="arrow">→</span>
+      <span class="node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>生成小纸条</span>
     </div>
-    <p class="note">源码开源：<a href="https://github.com/tsy-yyds/gps-html" target="_blank" rel="noopener" style="color:#0071e3">github.com/tsy-yyds/gps-html</a></p>
-  </section>
-</main>
+    <div class="file-grid">
+      <div class="file-row"><dt>软件名称</dt><dd>GPS 定位 HTML 前端</dd></div>
+      <div class="file-row"><dt>软件类型</dt><dd>网页小工具集</dd></div>
+      <div class="file-row"><dt>运行平台</dt><dd>任意现代浏览器（含手机）</dd></div>
+      <div class="file-row"><dt>当前版本</dt><dd>在线</dd></div>
+      <div class="file-row"><dt>软件语言</dt><dd>简体中文</dd></div>
+      <div class="file-row"><dt>收费方式</dt><dd>完全免费 · 开源</dd></div>
+      <div class="file-row"><dt>更新日期</dt><dd>2026</dd></div>
+      <div class="file-row"><dt>开发作者</dt><dd>tsy-yyds</dd></div>
+    </div>
+  </div>
+</section>
 
-<footer class="wrap">
-  <div>© 2026 tsy-yyds · GPS 定位 HTML 前端</div>
-  <div><a href="https://github.com/tsy-yyds" target="_blank" rel="noopener">GitHub 主页</a> · <a href="https://tsy-yyds.github.io/tecy-project-summary/" target="_blank" rel="noopener">TECY 项目总汇</a></div>
+<!-- ===== 在线工具 ===== -->
+<section id="tools">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>在线工具</h2>
+      <p>点「打开」直接使用，无需下载安装。</p>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></div>
+      <div class="tc-body">
+        <h3>小纸条（定位主文件）</h3>
+        <p>基于浏览器定位的互动页：打开后允许定位，即可生成带位置信息的小纸条，分享、逗趣都好用。</p>
+      </div>
+      <div class="tc-btn">
+        <a class="btn-open" href="夸人（定位主文件）.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9z"/></svg>
+          打开
+        </a>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="16" r="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+      <div class="tc-body">
+        <h3>密文解密</h3>
+        <p>单页解密小工具：粘贴密文一键解密，打开即用。</p>
+      </div>
+      <div class="tc-btn">
+        <a class="btn-open" href="密文解密.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9z"/></svg>
+          打开
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>常见问题</h2>
+    </div>
+    <div class="faq">
+      <details>
+        <summary>需要安装什么吗？</summary>
+        <p>什么都不用装。用浏览器（电脑或手机都行）打开对应工具页面即可。</p>
+      </details>
+      <details>
+        <summary>定位不准确 / 没反应？</summary>
+        <p>定位精度取决于浏览器与设备：手机建议开启 GPS 与网络定位；电脑一般只能到城市级精度。首次使用记得在浏览器弹窗里点「允许」。</p>
+      </details>
+      <details>
+        <summary>会记录我的位置吗？</summary>
+        <p>工具只是纯前端页面，定位结果只在你自己浏览器里使用，不上传任何服务器。</p>
+      </details>
+      <details>
+        <summary>源码在哪里？</summary>
+        <p>全部开源在 <code>github.com/tsy-yyds/gps-html</code>，就是这几个 HTML 文件，可直接下载自托管。</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>GPS 定位 HTML 前端 · 免费开源</span>
+    <span>源码仓库 <a href="https://github.com/tsy-yyds/gps-html">github.com/tsy-yyds/gps-html</a></span>
+  </div>
 </footer>
 
 </body>
