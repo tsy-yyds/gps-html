@@ -4,103 +4,160 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>解密</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
-            background: #0d0d0d;
-            min-height: 100vh;
-            color: #fff;
-        }
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 24px 16px;
-        }
-        h1 {
-            font-size: 18px;
-            font-weight: 500;
-            color: rgba(255,255,255,0.6);
-            margin-bottom: 20px;
-            letter-spacing: 1px;
-        }
-        textarea {
-            width: 100%;
-            height: 80px;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
-            color: #fff;
-            padding: 14px;
-            font-size: 14px;
-            font-family: monospace;
-            resize: none;
-            outline: none;
-        }
-        textarea:focus { border-color: rgba(255,255,255,0.25); }
-        textarea::placeholder { color: rgba(255,255,255,0.2); }
-        .btn {
-            display: block;
-            width: 100%;
-            margin-top: 12px;
-            padding: 12px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
-            color: #fff;
-            font-size: 15px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .btn:hover { background: rgba(255,255,255,0.16); }
-        .result {
-            margin-top: 20px;
-            padding: 16px;
-            background: rgba(255,255,255,0.04);
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.06);
-        }
-        .result .label {
-            font-size: 12px;
-            color: rgba(255,255,255,0.35);
-            margin-bottom: 4px;
-        }
-        .result .value {
-            font-size: 20px;
-            font-weight: 600;
-            font-family: monospace;
-            color: #00cec9;
-            word-break: break-all;
-        }
-        .result .coord {
-            display: flex;
-            gap: 16px;
-            margin-top: 12px;
-        }
-        .result .coord > div { flex: 1; }
-        #map {
-            width: 100%;
-            height: 280px;
-            border-radius: 10px;
-            margin-top: 16px;
-            border: 1px solid rgba(255,255,255,0.06);
-            overflow: hidden;
-        }
-        #map iframe {
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }
-        .error {
-            color: #e84393;
-            font-size: 14px;
-            margin-top: 12px;
-        }
-    </style>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230A0D0D'/%3E%3Ccircle cx='32' cy='32' r='16' fill='none' stroke='%23A6885B' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='3.5' fill='%23C7A473'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://miaoda.feishu.cn">
+<link rel="preconnect" href="https://sf3-scmcdn-cn.feishucdn.com" crossorigin>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+/* ===== TECY 功能页主题 · 密文解密 ===== */
+:root{
+  --paper:#0A0D0D;
+  --card:#0E1213;
+  --ink:#E6E1D8;
+  --dim:#9BA2A0;
+  --muted:#6C7674;
+  --brass:#A6885B;
+  --brass-hi:#C7A473;
+  --line:rgba(230,225,216,.12);
+  --line-soft:rgba(230,225,216,.07);
+  --wall:#C4806A;
+  --serif:"Noto Serif SC","Source Han Serif SC","Songti SC",Georgia,serif;
+  --sans:"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  --mono:"JetBrains Mono","SFMono-Regular",Consolas,"Courier New",monospace;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:var(--sans);
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(166,136,91,.11) 0%, rgba(166,136,91,0) 62%) no-repeat,
+    var(--paper);
+  min-height:100vh;
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  line-height:1.7;
+}
+.container{
+  max-width:540px;
+  margin:0 auto;
+  padding:52px 24px 64px;
+  min-height:100vh;
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.mark{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:.24em;
+  color:rgba(230,225,216,.34);
+  margin-bottom:26px;
+  display:block;
+}
+h1{
+  font-family:var(--serif);
+  font-size:22px;
+  font-weight:700;
+  letter-spacing:.03em;
+  line-height:1.5;
+  margin-bottom:6px;
+}
+.tagline{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.1em;
+  color:#8A928F;
+  margin-bottom:26px;
+}
+textarea{
+  width:100%;
+  height:92px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:2px;
+  color:var(--ink);
+  padding:15px 16px;
+  font-size:16px;
+  font-family:var(--mono);
+  line-height:1.7;
+  resize:none;
+  outline:none;
+  transition:border-color .3s var(--ease);
+}
+textarea:focus{border-color:rgba(166,136,91,.62)}
+textarea::placeholder{color:#5C6562}
+.btn{
+  display:block;
+  width:100%;
+  margin-top:14px;
+  padding:14px;
+  background:var(--brass);
+  border:1px solid var(--brass);
+  border-radius:2px;
+  color:#0A0D0D;
+  font-size:14px;
+  font-weight:500;
+  letter-spacing:.05em;
+  font-family:inherit;
+  cursor:pointer;
+  min-height:48px;
+  transition:background .3s var(--ease),border-color .3s var(--ease);
+}
+.btn:hover{background:var(--brass-hi);border-color:var(--brass-hi)}
+.result{
+  margin-top:26px;
+  padding:20px 22px;
+  background:var(--card);
+  border:1px solid var(--line-soft);
+  border-radius:2px;
+}
+.result .label{
+  font-family:var(--mono);
+  font-size:10.5px;
+  letter-spacing:.12em;
+  color:var(--muted);
+  margin-bottom:6px;
+}
+.result .value{
+  font-size:19px;
+  font-weight:400;
+  font-family:var(--mono);
+  color:var(--brass-hi);
+  word-break:break-all;
+  letter-spacing:.02em;
+}
+.result .coord{display:flex;gap:24px;margin-top:18px}
+.result .coord > div{flex:1;min-width:0}
+#map{
+  width:100%;
+  height:300px;
+  border-radius:2px;
+  margin-top:18px;
+  border:1px solid var(--line-soft);
+  overflow:hidden;
+  background:#0B0F10;
+}
+#map iframe{width:100%;height:100%;border:0;display:block}
+.error{
+  color:var(--wall);
+  font-size:12.5px;
+  font-family:var(--mono);
+  letter-spacing:.03em;
+  margin-top:14px;
+}
+@media (max-width:420px){
+  .container{padding:40px 18px 52px}
+  h1{font-size:20px}
+  #map{height:240px}
+}
+</style>
 </head>
 <body>
     <div class="container">
+        <span class="mark">TECY · GPS 小工具</span>
         <h1>解密 · 定位</h1>
+        <span class="tagline">粘贴 base64 密文，解出坐标并在地图上标点</span>
         <textarea id="input" placeholder="粘贴 Base64 密文"></textarea>
         <button class="btn" onclick="decrypt()">解密并定位</button>
         <div id="error"></div>
