@@ -4,76 +4,125 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>小纸条</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
-            background: #0d0d0d;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: #fff;
-            overflow: hidden;
-        }
-        .bg {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(ellipse at 50% 30%, #1a1a2e 0%, #0d0d0d 70%);
-            z-index: 0;
-        }
-        .orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.12;
-            z-index: 0;
-            animation: float 20s ease-in-out infinite;
-        }
-        .orb:nth-child(1) { width: 400px; height: 400px; background: #6c5ce7; top: -100px; left: -100px; animation-delay: 0s; }
-        .orb:nth-child(2) { width: 300px; height: 300px; background: #e84393; bottom: -80px; right: -60px; animation-delay: -7s; }
-        .orb:nth-child(3) { width: 250px; height: 250px; background: #00cec9; top: 40%; right: -100px; animation-delay: -14s; }
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -40px) scale(1.05); }
-            66% { transform: translate(-20px, 30px) scale(0.95); }
-        }
-        .card {
-            position: relative;
-            z-index: 1;
-            background: rgba(255,255,255,0.04);
-            backdrop-filter: blur(24px);
-            border-radius: 20px;
-            padding: 48px 32px;
-            width: 88%;
-            max-width: 360px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.06);
-        }
-        .line {
-            width: 40px;
-            height: 2px;
-            background: rgba(255,255,255,0.15);
-            margin: 0 auto 28px;
-            border-radius: 1px;
-        }
-        .quote {
-            font-size: 17px;
-            font-weight: 400;
-            line-height: 1.8;
-            color: rgba(255,255,255,0.85);
-            letter-spacing: 0.5px;
-        }
-        .refresh {
-            margin-top: 32px;
-            font-size: 12px;
-            color: rgba(255,255,255,0.2);
-            cursor: pointer;
-            user-select: none;
-            transition: color 0.3s;
-        }
-        .refresh:hover { color: rgba(255,255,255,0.4); }
-    </style>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230A0D0D'/%3E%3Ccircle cx='32' cy='32' r='16' fill='none' stroke='%23A6885B' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='3.5' fill='%23C7A473'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://miaoda.feishu.cn">
+<link rel="preconnect" href="https://sf3-scmcdn-cn.feishucdn.com" crossorigin>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+/* ===== TECY 功能页主题 · 小纸条 ===== */
+:root{
+  --paper:#0A0D0D;
+  --card:#0E1213;
+  --ink:#E6E1D8;
+  --dim:#9BA2A0;
+  --muted:#6C7674;
+  --brass:#A6885B;
+  --brass-hi:#C7A473;
+  --line:rgba(230,225,216,.12);
+  --line-soft:rgba(230,225,216,.07);
+  --serif:"Noto Serif SC","Source Han Serif SC","Songti SC",Georgia,serif;
+  --sans:"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  --mono:"JetBrains Mono","SFMono-Regular",Consolas,"Courier New",monospace;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:var(--sans);
+  background:var(--paper);
+  color:var(--ink);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  min-height:100dvh;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+  padding:32px 0;
+}
+.bg{
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 16%, rgba(166,136,91,.13) 0%, rgba(166,136,91,0) 68%),
+    var(--paper);
+  z-index:0;
+}
+.orb{
+  position:fixed;
+  border-radius:50%;
+  filter:blur(110px);
+  opacity:.06;
+  background:var(--brass);
+  z-index:0;
+  animation:drift 34s ease-in-out infinite;
+}
+.orb:nth-child(2){width:420px;height:420px;top:-140px;left:-160px;animation-delay:0s}
+.orb:nth-child(3){width:340px;height:340px;bottom:-120px;right:-120px;animation-delay:-12s}
+.orb:nth-child(4){width:280px;height:280px;top:44%;right:-140px;animation-delay:-22s}
+@keyframes drift{
+  0%,100%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(24px,-28px) scale(1.04)}
+}
+.mark{
+  position:fixed;
+  top:26px;left:28px;
+  z-index:2;
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:.24em;
+  color:rgba(230,225,216,.34);
+}
+.card{
+  position:relative;
+  z-index:1;
+  width:88%;
+  max-width:420px;
+  text-align:center;
+  padding:60px 40px 48px;
+  background:#101415;
+  border:1px solid var(--line);
+  border-radius:2px;
+}
+.line{width:34px;height:2px;background:var(--brass);margin:0 auto 36px}
+.quote{
+  font-family:var(--serif);
+  font-size:20px;
+  font-weight:400;
+  line-height:2;
+  letter-spacing:.05em;
+  color:var(--ink);
+  min-height:5.6em;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-wrap:balance;
+}
+.refresh{
+  display:inline-block;
+  margin-top:34px;
+  padding:12px 24px;
+  font-family:var(--mono);
+  font-size:12px;
+  letter-spacing:.16em;
+  color:var(--dim);
+  border:1px solid var(--line);
+  border-radius:2px;
+  cursor:pointer;
+  user-select:none;
+  transition:color .3s var(--ease),border-color .3s var(--ease);
+  min-height:44px;
+  line-height:20px;
+}
+.refresh:hover{color:var(--brass-hi);border-color:rgba(166,136,91,.55)}
+@media (max-width:420px){
+  .card{width:90%;padding:48px 26px 40px}
+  .quote{font-size:18px;min-height:6.4em}
+}
+@media (prefers-reduced-motion:reduce){
+  .orb{animation:none}
+}
+</style>
 </head>
 <body>
     <div class="bg"></div>
@@ -156,7 +205,7 @@
         "你是我见过最有韧性的人了，跌倒多少次都能站起来。",
         "你有自己的节奏，不用活在别人的时钟里。",
         "你那些看似随意的决定，后来都证明是对的。",
-        "你对陌生人也保持善意，这很难得。",
+        "你对待陌生人也保持善意，这很难得。",
         "你不用成为太阳，做一颗星星就已经足够亮了。",
         "你值得拥有那些你以为自己配不上的东西。",
         "你做事的认真劲儿，是很多人学不来的。",
@@ -330,5 +379,6 @@
         });
     })();
     </script>
+    <div class="mark">TECY · 小纸条</div>
 </body>
 </html>
